@@ -1,0 +1,7 @@
+{
+  "name": "good mornong",
+  "description": "shows all the good morning tweets on map",
+  "keywords": ["HTML5","node-js","css", "express"],
+  "website": "www.a.co.il",
+  "repository": "https://github.com/shenkarlab/GoodMorning-Israel/tree/master/server"
+}
