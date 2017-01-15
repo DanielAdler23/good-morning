@@ -136,15 +136,21 @@
 
         setTimeout(() => {
             document.querySelector('div.amcharts-chart-div > a').style.display = 'none'
-            var columns = document.querySelectorAll('g.amcharts-graph-column[visibility=visible]')
+//            var columns = document.querySelectorAll('g.amcharts-graph-column[visibility=visible]')
+            var columns = document.querySelectorAll('g[visibility=visible]')
             console.log(columns.length)
-            for(var item of columns) {
+            for(var item of columns)
+                item.addEventListener("click", function() {
+                    var time = this.getAttribute('aria-label')
+                    console.log(time.split(' ')[1])
 
-                //var tmp = item.getAttribute('aria-label')
-                item.addEventListener("click", function() { console.log(this.getAttribute('aria-label')); }, false);
-            }
+                    get_tweets_by_country('Australia')
+
+                }, false);
+
             console.log('READY')
         }, 7000);
+
     </script>
 </head>
 <body>

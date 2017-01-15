@@ -16,7 +16,7 @@ router.get('/', (req, res) => {
     console.log('Get All Tweets')
     var tweets = db.get().collection(collection)
     tweets.find().limit(1000).toArray((err, docs) => {                       //limit because we have too many tweets - +25,000
-        err ? res.status(404).send({error:err}) : res.jsonp({eqfeed_callback: docs})
+        err ? res.status(404).send({error:err}) : res.status(200).send(docs)
     })
 })
 
