@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 const bodyParser = require('body-parser')
 var db = require('./database')
-const collection = 'processed_tweets'
+const collection = 'new_processed_tweets'
 
 router.use(bodyParser.json({limit: '5mb'}))
 router.use(bodyParser.urlencoded({limit: '5mb', extended: true }))
@@ -38,11 +38,12 @@ router.get('/word/:word', (req, res) => {
     })
 })
 
-router.get('/time/:time', (req, res) => {
-    var time = req.params.time
-    console.log(`Get Tweets For Specific Time - ${time}`)
+router.get('/time/:from/:to', (req, res) => {
+    var from = parseInt(req.params.from)
+    var to = parseInt(req.params.to)
+    console.log(`Get All Tweets Betweeen ${from} - ${to}`)
     var tweets = db.get().collection(collection)
-    tweets.find({timestamp: time}).toArray((err, docs) => {
+    tweets.find({time: {$gt: from - 1, $lt: to + 1}}).limit(1000).toArray((err, docs) => {
         err ? res.status(404).send({error:err}) : res.status(200).send(docs)
     })
 })
