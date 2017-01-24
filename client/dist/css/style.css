@@ -1,9 +1,12 @@
 html, body {
-    height: 95%;
+    /*height: 95%;*/
     margin: 0;
-    margin-top: 20px;
+    /*margin-top: 20px;*/
     padding: 0;
     background-color: #f2f2f2;
+}
+nav{
+    padding-top: 34px;
 }
 
 #map {
@@ -18,6 +21,7 @@ html, body {
 }
 
 #sliderWrapper {
+    width: 96%;
     margin-top: 20px;
     margin-left: 20px;
     margin-right: 20px;
@@ -44,13 +48,12 @@ html, body {
 #goodMorningTitle{
     z-index: 10;
     position: absolute;
-    width:42%;
-    height: 22%;
+    width:366px;
+    height: 35%;
     padding-left: 40px;
     border-left: solid #D0FF6C 15px;
-
-
 }
+
 #goodMorningTitle h2{
     margin-top: 80px;
     color: white;
@@ -73,10 +76,9 @@ html, body {
 #goodMorningBody{
     z-index: 10;
     position: absolute;
-    width:42%;
-    height: 25%;
-    padding-left: 60px;
-    padding-top: 555px;
+    width:256px;
+    top:540px;
+    left: 60px;
 }
 
 
@@ -89,7 +91,13 @@ html, body {
     font-weight: 600;
 }
 
-
+#sideBarGreen{
+    position: absolute;
+    top:34px;
+    right: 0px;
+    height: 790px;
+    border-right: solid #D0FF6C 15px;
+}
 
 #loading {
     opacity:0.8;
