@@ -15,7 +15,7 @@ router.use((req, res, next) => {
 router.get('/', (req, res) => {
     console.log('Get All Tweets')
     var tweets = db.get().collection(collection)
-    tweets.find().limit(1000).toArray((err, docs) => {                       //limit because we have too many tweets - +25,000
+    tweets.find({}, { user: 0, picture: 0, text: 0, timestamp: 0, location: 0 }).limit(15000).toArray((err, docs) => {                       //limit because we have too many tweets - +25,000
         err ? res.status(404).send({error:err}) : res.status(200).send(docs)
     })
 })
@@ -43,7 +43,7 @@ router.get('/time/:from/:to', (req, res) => {
     var to = parseInt(req.params.to)
     console.log(`Get All Tweets Betweeen ${from} - ${to}`)
     var tweets = db.get().collection(collection)
-    tweets.find({time: {$gt: from - 1, $lt: to + 1}}).limit(1000).toArray((err, docs) => {
+    tweets.find({time: {$gt: from - 1, $lt: to + 1}}, { user: 0, picture: 0, text: 0, timestamp: 0, location: 0, time: 0 }).limit(15000).toArray((err, docs) => {
         err ? res.status(404).send({error:err}) : res.status(200).send(docs)
     })
 })

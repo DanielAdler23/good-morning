@@ -4,146 +4,129 @@ var iconBase = 'https://maps.google.com/mapfiles/kml/shapes/'
 var blueDot = './img/blueDot.png'
 var greenDot = './img/greenDot.png'
 var firstTime = false
+var allMarkers
 
 //------------------------------------------------ Map Controller ------------------------------------------------//
 
 function initMap() {
-    map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 2,
-        center: new google.maps.LatLng(0, 0),
-        minZoom: 2,
-        disableDefaultUI: true,
-        styles: [
-            {
-                elementType: 'geometry',            //Countries Color
-                stylers: [{color: '#0ba9ff'}]
-            },
-            {
-                elementType: 'labels.text.stroke',  //Countries Title Outer Line Color
-                stylers: [{color: '#42ace3'}]
-            },
-            {
-                elementType: 'labels.text.fill',    //Countries Title Color
-                stylers: [{color: '#ffffff'}]
-            },
-            {
-                featureType: 'administrative.country',
-                elementType: 'geometry',
-                stylers: [{color: '#45d1f1'}]
-            },
-            {
-                featureType: 'administrative.locality',
-                elementType: 'labels.text.fill',
-                stylers: [{color: '#ffffff'}]
-            },
-            // {
-            //     featureType: 'poi',
-            //     elementType: 'labels.text.fill',
-            //     stylers: [{color: '#d59563'}]
-            // },
-            {
-                featureType: 'poi.park',
-                elementType: 'geometry',
-                stylers: [{color: '#45d1f1'}]
-            },
-            // {
-            //     featureType: 'poi.park',
-            //     elementType: 'labels.text.fill',
-            //     stylers: [{color: '#6b9a76'}]
-            // },
-            {
-                featureType: 'road',
-                elementType: 'geometry',
-                stylers: [{color: '#38414e'}]
-            },
-            {
-                featureType: 'road',
-                elementType: 'geometry.stroke',
-                stylers: [{color: '#45d1f1'}]
-            },
-            // {
-            //     featureType: 'road',
-            //     elementType: 'labels.text.fill',
-            //     stylers: [{color: '#9ca5b3'}]
-            // },
-            {
-                featureType: 'road.highway',
-                elementType: 'geometry',
-                stylers: [{color: '#45d1f1'}]
-            },
-            {
-                featureType: 'road.highway',
-                elementType: 'geometry.stroke',
-                stylers: [{color: '#45d1f1'}]
-            },
-            // {
-            //     featureType: 'road.highway',
-            //     elementType: 'labels.text.fill',
-            //     stylers: [{color: '#f3d19c'}]
-            // },
-            {
-                featureType: 'transit',
-                elementType: 'geometry',
-                stylers: [{color: '#45d1f1'}]
-            },
-            {
-                featureType: 'transit.station',
-                elementType: 'labels.text.fill',
-                stylers: [{color: '#d59563'}]
-            },
-            {
-                featureType: 'water',               //Water Color
-                elementType: 'geometry',
-                stylers: [{color: '#45d1f1'}]
-            },
-            {
-                featureType: 'water',
-                elementType: 'labels.text.fill',
-                stylers: [{color: '#515c6d'}]
-            },
-            {
-                featureType: 'water',
-                elementType: 'labels.text.stroke',
-                stylers: [{color: '#17263c'}]
-            }
-        ]
-    })
-
-    // initialize()
+    get_all_tweets()
+    setTimeout(() => {
+        document.querySelector('div#loading').remove()
+        map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 2,
+            center: new google.maps.LatLng(0, 0),
+            minZoom: 2,
+            disableDefaultUI: true,
+            styles: [
+                {
+                    elementType: 'geometry',            //Countries Color
+                    stylers: [{color: '#0ba9ff'}]
+                },
+                {
+                    elementType: 'labels.text.stroke',  //Countries Title Outer Line Color
+                    stylers: [{color: '#42ace3'}]
+                },
+                {
+                    elementType: 'labels.text.fill',    //Countries Title Color
+                    stylers: [{color: '#ffffff'}]
+                },
+                {
+                    featureType: 'administrative.country',
+                    elementType: 'geometry',
+                    stylers: [{color: '#45d1f1'}]
+                },
+                {
+                    featureType: 'administrative.locality',
+                    elementType: 'labels.text.fill',
+                    stylers: [{color: '#ffffff'}]
+                },
+                {
+                    featureType: 'poi.park',
+                    elementType: 'geometry',
+                    stylers: [{color: '#45d1f1'}]
+                },
+                {
+                    featureType: 'road',
+                    elementType: 'geometry',
+                    stylers: [{color: '#38414e'}]
+                },
+                {
+                    featureType: 'road',
+                    elementType: 'geometry.stroke',
+                    stylers: [{color: '#45d1f1'}]
+                },
+                {
+                    featureType: 'road.highway',
+                    elementType: 'geometry',
+                    stylers: [{color: '#45d1f1'}]
+                },
+                {
+                    featureType: 'road.highway',
+                    elementType: 'geometry.stroke',
+                    stylers: [{color: '#45d1f1'}]
+                },
+                {
+                    featureType: 'transit',
+                    elementType: 'geometry',
+                    stylers: [{color: '#45d1f1'}]
+                },
+                {
+                    featureType: 'transit.station',
+                    elementType: 'labels.text.fill',
+                    stylers: [{color: '#d59563'}]
+                },
+                {
+                    featureType: 'water',               //Water Color
+                    elementType: 'geometry',
+                    stylers: [{color: '#45d1f1'}]
+                },
+                {
+                    featureType: 'water',
+                    elementType: 'labels.text.fill',
+                    stylers: [{color: '#515c6d'}]
+                },
+                {
+                    featureType: 'water',
+                    elementType: 'labels.text.stroke',
+                    stylers: [{color: '#17263c'}]
+                }
+            ]
+        })
+        set_markers(allMarkers)
+    }, 8000)
 }
 
 function attachSecretMessage(marker, secretMessage) {
-    //sconsole.log(secretMessage.timestamp);
-    var date = new Date(secretMessage.timestamp * 1000);
-    var d = new Date(secretMessage.timestamp);
-    var month = date.getUTCMonth() + 1;
-    // Hours part from the timestamp
-    var hours = date.getUTCHours();
-    // Minutes part from the timestamp
-    var minutes = "0" + date.getUTCMinutes();
-    // Seconds part from the timestamp
-    var seconds = "0" + date.getUTCSeconds();
-
-    // Will display time in 10:30:23 format
-    var formattedTime = date.getUTCDate() + '/' + month + ' ' + hours +
-        ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
-    //console.log(secretMessage);
-
-    var contentString =
-        '<div id="content">' +
-        '<div class="text">' +
-        secretMessage.text +
-        '</div>' +
-        '<div class="Img">' +
-        // '<img src="'+secretMessage.picture+'" width"20px" height"20px">'+
-        // '</div>'+
-        '<div class="details"' +
-        '<p>' + formattedTime + '</p>' +
-        '<p>' + '@' + secretMessage.user + '</p>' +
-        '<p>' + secretMessage.location.country + '</p>';
-    var infowindow = new google.maps.InfoWindow({
-        content: contentString
-    });
+    // var date = new Date(secretMessage.timestamp * 1000);
+    // var d = new Date(secretMessage.timestamp);
+    // var month = date.getUTCMonth() + 1;
+    // // Hours part from the timestamp
+    // var hours = date.getUTCHours();
+    // // Minutes part from the timestamp
+    // var minutes = "0" + date.getUTCMinutes();
+    // // Seconds part from the timestamp
+    // var seconds = "0" + date.getUTCSeconds();
+    //
+    // // Will display time in 10:30:23 format
+    // var formattedTime = date.getUTCDate() + '/' + month + ' ' + hours +
+    //     ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
+    // //console.log(secretMessage);
+    //
+    // var contentString =
+    //     '<div id="content">' +
+    //     '<div class="text">' +
+    //     secretMessage.text +
+    //     '</div>' +
+    //     '<div class="Img">' +
+    //     // '<img src="'+secretMessage.picture+'" width"20px" height"20px">'+
+    //     // '</div>'+
+    //     '<div class="details"' +
+    //     '<p>' + formattedTime + '</p>' +
+    //     '<p>' + '@' + secretMessage.user + '</p>' +
+    //     '<p>' + secretMessage.location.country + '</p>';
+    // var infowindow = new google.maps.InfoWindow({
+    //     content: contentString
+    // });
     // zoom to
     // marker.addListener('click', function() {
     //     map.setZoom(8);
@@ -151,10 +134,11 @@ function attachSecretMessage(marker, secretMessage) {
     // });
 
     marker.addListener('click', function () {
-        infowindow.open(marker.get('map'), marker);
+        // infowindow.open(marker.get('map'), marker);
+        console.log(marker.id)
     });
     marker.addListener('mouseout', function () {
-        infowindow.close();
+        // infowindow.close();
     });
 }
 
@@ -186,7 +170,8 @@ function set_markers(results) {
         var marker = new google.maps.Marker({
             position: latLng,
             icon: greenDot,
-            map: map
+            map: map,
+            id: item._id
         });
         attachSecretMessage(marker, item)
         arrMarkers.push(marker)
@@ -226,39 +211,22 @@ $(function () {
             return moment(num, "X").format("hh A")
         },
         onStart: function (data) {
-            // console.log(data.from)
+
         },
         onChange: function (data) {
-            // var from
-            // var to
-            // if(data.from_value.includes('PM')) {
-            //     var fromTmp = parseInt(data.from_value.replace(/\D/g, ''))
-            //     from = fromTmp + 12
-            // } else
-            //     from = data.from_value.replace(/\D/g, '').trim()
-            //
-            //
-            // if(data.to_value.includes('PM')) {
-            //     var toTmp = parseInt(data.to_value.replace(/\D/g, ''))
-            //     to = toTmp + 12
-            // } else
-            //     to = data.to_value.replace(/\D/g, '').trim()
-            //
-            // console.log(`FROM: ${from}`)
-            // console.log(`TO: ${to}`)
-            // console.log(get_tweets_by_time(from, to))
 
         },
         onFinish: function (data) {
             if(firstTime) {
                 var from = cleanTime(data.from_value)
                 var to = cleanTime(data.to_value)
-                get_tweets_by_time(from, to)
+                removeMarkers()
+                set_markers(get_tweets_by_time(from, to))
             } else
                 firstTime = true
         },
         onUpdate: function (data) {
-            // console.log(data)
+
         }
     })
 })
@@ -281,6 +249,7 @@ function get_all_tweets() {
         url: 'https://gutenmorgen.herokuapp.com/tweets',
         success: function (tweets) {
             removeMarkers()
+            allMarkers = tweets
             //set_markers(tweets)
         }
     });
@@ -301,15 +270,20 @@ function get_tweets_by_country(country) {
 }
 
 function get_tweets_by_time(from, to) {
-    $.ajax({
-        type: "GET",
-        async: false,
-        dataType: "json",
-        url: `https://gutenmorgen.herokuapp.com/tweets/time/${from}/${to}`,
-        success: function (tweets) {
-            removeMarkers()
-            set_markers(tweets)
-        }
-    });
+    var timeTweets = allMarkers.filter(marker => {
+        if(marker.time < to && marker.time > from - 1)
+            return marker
+    })
+    return timeTweets
+    // $.ajax({
+    //     type: "GET",
+    //     async: false,
+    //     dataType: "json",
+    //     url: `https://gutenmorgen.herokuapp.com/tweets/time/${from}/${to}`,
+    //     success: function (tweets) {
+    //         removeMarkers()
+    //         set_markers(tweets)
+    //     }
+    // });
 }
 

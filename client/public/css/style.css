@@ -7,7 +7,7 @@ html, body {
 }
 
 #map {
-    height: 655px;
+    height: 650px;
     width: 100%;
 }
 
@@ -87,4 +87,55 @@ html, body {
     font-style: normal;
     font-variant: normal;
     font-weight: 600;
+}
+
+
+
+#loading {
+    opacity:0.8;
+    background-color:#0ba9ff;
+    position:fixed;
+    width:100%;
+    height:100%;
+    top:0px;
+    left:0px;
+    z-index:1000;
+}
+
+
+#wrapper{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+}
+
+.path {
+    stroke-dasharray: 2000;
+    stroke-dashoffset: 0;
+    animation: dash 5s linear  infinite;
+}
+
+@keyframes dash {
+    0% {
+        stroke-dashoffset: 2000;
+    }
+    90% {
+        stroke-dashoffset: 0;
+    }
+}
+
+.path2 {
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: dash2 5s linear  infinite;
+}
+
+@keyframes dash2 {
+    60% {
+        stroke-dashoffset: 1000;
+    }
+    100% {
+        stroke-dashoffset: 0;
+    }
 }
