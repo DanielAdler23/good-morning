@@ -92,8 +92,72 @@ function initMap() {
                 }
             ]
         })
+        var script = document.createElement('script');
+        var url = ['https://www.googleapis.com/fusiontables/v1/query?'];
+        url.push('sql=');
+        var query = 'SELECT name, kml_4326 FROM ' +
+            '1foc3xO9DyfSIF6ofvN0kp2bxSfSeKog5FbdWdQ';
+        var encodedQuery = encodeURIComponent(query);
+        url.push(encodedQuery);
+        url.push('&callback=drawMap');
+        url.push('&key=AIzaSyAm9yWCV7JPCTHCJut8whOjARd7pwROFDQ');
+        script.src = url.join('');
+        var body = document.getElementsByTagName('body')[0];
+        body.appendChild(script);
         set_markers(allMarkers)
     }, 8000)
+}
+
+
+function drawMap(data) {
+
+    var rows = data['rows'];
+    for (var i in rows) {
+        var name = []
+        name.push(rows[i][0]);
+        if (rows[i][0] != 'Antarctica') {
+            var newCoordinates = [];
+            var geometries = rows[i][1]['geometries'];
+            if (geometries) {
+                for (var j in geometries) {
+                    newCoordinates.push(constructNewCoordinates(geometries[j]));
+                }
+            } else {
+                newCoordinates = constructNewCoordinates(rows[i][1]['geometry']);
+            }
+            var country = new google.maps.Polygon({
+                paths: newCoordinates,
+                strokeColor: '#42ace3',
+                strokeOpacity: 1,
+                strokeWeight: 1,
+                fillOpacity: 0,
+                ID:name
+            });
+            // console.log(name)
+
+
+            google.maps.event.addListener(country, 'dblclick', function() {
+                console.log(country)
+                // var latLng = new google.maps.LatLng(23, -81);
+                this.setOptions({fillOpacity: 0.7, fillColor:"#D0FF6C"});
+                // map.panTo(latLng)
+                // map.setZoom(6)
+
+            });
+
+            country.setMap(map);
+        }
+    }
+}
+
+function constructNewCoordinates(polygon) {
+    var newCoordinates = [];
+    var coordinates = polygon['coordinates'][0];
+    for (var i in coordinates) {
+        newCoordinates.push(
+            new google.maps.LatLng(coordinates[i][1], coordinates[i][0]));
+    }
+    return newCoordinates;
 }
 
 function attachSecretMessage(marker, secretMessage) {
