@@ -4,6 +4,8 @@ const bodyParser = require('body-parser')
 var db = require('./database')
 var ObjectID = require('mongodb').ObjectID
 const collection = 'new_processed_tweets'
+const popularWords = 'popular_words'
+const utils = require('./serverUtils')
 
 router.use(bodyParser.json({limit: '5mb'}))
 router.use(bodyParser.urlencoded({limit: '5mb', extended: true }))
@@ -24,9 +26,16 @@ router.get('/', (req, res) => {
 router.get('/country/:country', (req, res) => {
     var country = req.params.country
     console.log(`Get Tweets By Country - ${country}`)
-    var tweets = db.get().collection(collection)
-    tweets.find({"location.country": country}).toArray((err, docs) => {
-        err ? res.status(404).send({error:err}) : res.status(200).send(docs)
+    var countryWords = db.get().collection(popularWords)
+    countryWords.find({"country": country}).toArray((err, docs) => {
+        if(err)
+            res.status(404).send({error:err})
+        else if(docs.length == 0)
+            res.status(200).send({message: 'There Is No Such Country'})
+        else {
+            var popularWords = utils.getPopular(docs)
+            res.status(200).send(popularWords)
+        }
     })
 })
 
