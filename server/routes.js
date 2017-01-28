@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 const bodyParser = require('body-parser')
 var db = require('./database')
+var ObjectID = require('mongodb').ObjectID
 const collection = 'new_processed_tweets'
 
 router.use(bodyParser.json({limit: '5mb'}))
@@ -44,6 +45,16 @@ router.get('/time/:from/:to', (req, res) => {
     console.log(`Get All Tweets Betweeen ${from} - ${to}`)
     var tweets = db.get().collection(collection)
     tweets.find({time: {$gt: from - 1, $lt: to + 1}}, { user: 0, picture: 0, text: 0, timestamp: 0, location: 0, time: 0 }).limit(15000).toArray((err, docs) => {
+        err ? res.status(404).send({error:err}) : res.status(200).send(docs)
+    })
+})
+
+router.get('/:id/content', (req, res) => {
+    var id = req.params.id
+    var objectId = new ObjectID(id);
+    console.log(`Get Tweet - ${id}`)
+    var tweets = db.get().collection(collection)
+    tweets.find({ "_id": objectId }).toArray((err, docs) => {
         err ? res.status(404).send({error:err}) : res.status(200).send(docs)
     })
 })

@@ -1,9 +1,12 @@
 html, body {
-    height: 95%;
+    /*height: 95%;*/
     margin: 0;
-    margin-top: 20px;
+    /*margin-top: 20px;*/
     padding: 0;
     background-color: #f2f2f2;
+}
+nav{
+    padding-top: 34px;
 }
 
 #map {
@@ -18,6 +21,7 @@ html, body {
 }
 
 #sliderWrapper {
+    width: 96%;
     margin-top: 20px;
     margin-left: 20px;
     margin-right: 20px;
@@ -27,11 +31,20 @@ html, body {
     margin: auto;
 }
 
-#content .text{
+#tweetUserPicture {
+    /*display: inline-block;*/
+}
+
+#firstHeading {
+    /*display: inline-block;*/
+    /*top: 0px;*/
+}
+
+#content .text {
     font: normal 18px/24px Georgia, "Times New Roman", Palatino, serif;
     margin: 0 5px 10px 0;
 }
-#content .details{
+#content .details {
     font-weight: normal;
     color: #666;
     font-size: 12px;
@@ -41,17 +54,16 @@ html, body {
     margin: 0 5px 10px 0;
 }
 
-#goodMorningTitle{
+#goodMorningTitle {
     z-index: 10;
     position: absolute;
-    width:42%;
-    height: 22%;
+    width:366px;
+    height: 25%;
     padding-left: 40px;
     border-left: solid #D0FF6C 15px;
-
-
 }
-#goodMorningTitle h2{
+
+#goodMorningTitle h2 {
     margin-top: 80px;
     color: white;
     font-family: "Open Sans", sans-serif;
@@ -60,7 +72,7 @@ html, body {
     line-height: 10px;
 }
 
-#goodMorningTitle p{
+#goodMorningTitle p {
     color: white;
     font-family: "Open Sans", sans-serif;
     font-size: 28px;
@@ -70,17 +82,16 @@ html, body {
     line-height: 20px;
 }
 
-#goodMorningBody{
+#goodMorningBody {
     z-index: 10;
     position: absolute;
-    width:42%;
-    height: 25%;
-    padding-left: 60px;
-    padding-top: 555px;
+    width:256px;
+    top:540px;
+    left: 60px;
 }
 
 
-#goodMorningBody p{
+#goodMorningBody p {
     color: white;
     font-family: "Open Sans", sans-serif;
     font-size: 24px;
@@ -89,7 +100,13 @@ html, body {
     font-weight: 600;
 }
 
-
+#sideBarGreen {
+    position: absolute;
+    top:34px;
+    right: 0px;
+    height: 790px;
+    border-right: solid #D0FF6C 15px;
+}
 
 #loading {
     opacity:0.8;
@@ -103,7 +120,7 @@ html, body {
 }
 
 
-#wrapper{
+#wrapper {
     position: absolute;
     top: 50%;
     left: 50%;

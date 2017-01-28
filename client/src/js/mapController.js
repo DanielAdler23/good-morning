@@ -1,9 +1,11 @@
-var map
-var arrMarkers = []
+var url = 'https://www.googleapis.com/fusiontables/v1/query?sql=SELECT%20name%2C%20kml_4326%20FROM%201foc3xO9DyfSIF6ofvN0kp2bxSfSeKog5FbdWdQ&callback=drawMap&key=AIzaSyAm9yWCV7JPCTHCJut8whOjARd7pwROFDQ'
 var iconBase = 'https://maps.google.com/mapfiles/kml/shapes/'
 var blueDot = './img/blueDot.png'
 var greenDot = './img/greenDot.png'
+var map
+var arrMarkers = []
 var firstTime = false
+var prevBubble = false
 var allMarkers
 
 //------------------------------------------------ Map Controller ------------------------------------------------//
@@ -93,15 +95,7 @@ function initMap() {
             ]
         })
         var script = document.createElement('script');
-        var url = ['https://www.googleapis.com/fusiontables/v1/query?'];
-        url.push('sql=');
-        var query = 'SELECT name, kml_4326 FROM ' +
-            '1foc3xO9DyfSIF6ofvN0kp2bxSfSeKog5FbdWdQ';
-        var encodedQuery = encodeURIComponent(query);
-        url.push(encodedQuery);
-        url.push('&callback=drawMap');
-        url.push('&key=AIzaSyAm9yWCV7JPCTHCJut8whOjARd7pwROFDQ');
-        script.src = url.join('');
+        script.src = url
         var body = document.getElementsByTagName('body')[0];
         body.appendChild(script);
         set_markers(allMarkers)
@@ -160,84 +154,17 @@ function constructNewCoordinates(polygon) {
     return newCoordinates;
 }
 
-function attachSecretMessage(marker, secretMessage) {
-    // var date = new Date(secretMessage.timestamp * 1000);
-    // var d = new Date(secretMessage.timestamp);
-    // var month = date.getUTCMonth() + 1;
-    // // Hours part from the timestamp
-    // var hours = date.getUTCHours();
-    // // Minutes part from the timestamp
-    // var minutes = "0" + date.getUTCMinutes();
-    // // Seconds part from the timestamp
-    // var seconds = "0" + date.getUTCSeconds();
-    //
-    // // Will display time in 10:30:23 format
-    // var formattedTime = date.getUTCDate() + '/' + month + ' ' + hours +
-    //     ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
-    // //console.log(secretMessage);
-    //
-    // var contentString =
-    //     '<div id="content">' +
-    //     '<div class="text">' +
-    //     secretMessage.text +
-    //     '</div>' +
-    //     '<div class="Img">' +
-    //     // '<img src="'+secretMessage.picture+'" width"20px" height"20px">'+
-    //     // '</div>'+
-    //     '<div class="details"' +
-    //     '<p>' + formattedTime + '</p>' +
-    //     '<p>' + '@' + secretMessage.user + '</p>' +
-    //     '<p>' + secretMessage.location.country + '</p>';
-    // var infowindow = new google.maps.InfoWindow({
-    //     content: contentString
-    // });
-    // zoom to
-    // marker.addListener('click', function() {
-    //     map.setZoom(8);
-    //     map.setCenter(marker.getPosition());
-    // });
-
-    marker.addListener('click', function () {
-        // infowindow.open(marker.get('map'), marker);
-        console.log(marker.id)
-    });
-    marker.addListener('mouseout', function () {
-        // infowindow.close();
-    });
-}
-
-function initialize() {
-
-    get_all_tweets()
-    setTimeout(() => {
-        document.querySelector('div.amcharts-chart-div > a').style.display = 'none'
-        var columns = document.querySelectorAll('g[visibility=visible]')
-        console.log(columns.length)
-        for (var item of columns)
-            item.addEventListener("click", function () {
-                var time = this.getAttribute('aria-label')
-                console.log(time.split(' ')[1])
-
-                get_tweets_by_country('Australia')
-
-            }, false);
-
-        console.log('READY')
-    }, 7000);
-
-}
-
 function set_markers(results) {
     for (var item of results) {
         var coords = item.coordinates
         var latLng = new google.maps.LatLng(coords.latitude, coords.longitude)
         var marker = new google.maps.Marker({
             position: latLng,
-            icon: greenDot,
+            icon: (item.color == 0) ? blueDot : greenDot,
             map: map,
             id: item._id
         });
-        attachSecretMessage(marker, item)
+        markerBubble(marker, item)
         arrMarkers.push(marker)
     }
 }
@@ -247,6 +174,32 @@ function removeMarkers() {
         mark.setMap(null)
 
     arrMarkers = []
+}
+
+function markerBubble(marker) {
+    marker.addListener('click', function () {
+        if(prevBubble)
+            prevBubble.close()
+
+        var tweetContent = get_tweet_content(marker.id)
+
+        var contentString = '<div id="content">'+
+            '<img id="tweetUserPicture" src="' + tweetContent.picture +'">'+
+            '<h1 id="firstHeading" class="firstHeading">' + '@' + tweetContent.user + '</h1>'+
+            '<div id="bodyContent">'+
+            '<p>' + tweetContent.text + '</p>'+
+            '</div>'+
+            '</div>';
+
+        var infowindow = new google.maps.InfoWindow({
+            content: contentString,
+            maxWidth: 250
+        });
+
+        prevBubble = infowindow
+
+        infowindow.open(map, marker);
+    });
 }
 
 //------------------------------------------------ Slider Controller ------------------------------------------------//
@@ -264,10 +217,6 @@ var hours = [ "01 AM", "02 AM", "03 AM",
 
 $(function () {
     $("#range").ionRangeSlider({
-        //min: +moment().subtract(24, "hours").format("X"),
-        //max: +moment().format("X"),
-        //from: +moment().subtract(24, "hours").format("X"),
-        //to: +moment().format("X"),
         type: 'double',
         grid: true,
         values: hours,
@@ -295,8 +244,6 @@ $(function () {
     })
 })
 
-//------------------------------------------------ Mlab Controller ------------------------------------------------//
-
 function cleanTime(time) {
     if(time.includes('PM')) {
         var toTmp = parseInt(time.replace(/\D/g, ''))
@@ -304,6 +251,10 @@ function cleanTime(time) {
     } else
         return time.replace(/\D/g, '').trim()
 }
+
+//------------------------------------------------ Mlab Controller ------------------------------------------------//
+
+
 
 function get_all_tweets() {
     $.ajax({
@@ -313,6 +264,8 @@ function get_all_tweets() {
         url: 'https://gutenmorgen.herokuapp.com/tweets',
         success: function (tweets) {
             removeMarkers()
+            for(var tweet of tweets)
+                tweet.color = 0
             allMarkers = tweets
             //set_markers(tweets)
         }
@@ -333,21 +286,29 @@ function get_tweets_by_country(country) {
     });
 }
 
+function get_tweet_content(id) {
+    var tweet
+    $.ajax({
+        type: "GET",
+        async: false,
+        dataType: "json",
+        url: `https://gutenmorgen.herokuapp.com/tweets/${id}/content`,
+        success: function (data) {
+            tweet = data[0]
+        }
+    });
+    return tweet
+}
+
 function get_tweets_by_time(from, to) {
-    var timeTweets = allMarkers.filter(marker => {
+    var timeTweets = allMarkers.map(marker => {
         if(marker.time < to && marker.time > from - 1)
-            return marker
+            marker.color = 1
+        else
+            marker.color = 0
+
+        return marker
     })
     return timeTweets
-    // $.ajax({
-    //     type: "GET",
-    //     async: false,
-    //     dataType: "json",
-    //     url: `https://gutenmorgen.herokuapp.com/tweets/time/${from}/${to}`,
-    //     success: function (tweets) {
-    //         removeMarkers()
-    //         set_markers(tweets)
-    //     }
-    // });
 }
 
