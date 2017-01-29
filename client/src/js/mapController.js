@@ -7,6 +7,7 @@ var arrMarkers = []
 var firstTime = false
 var prevBubble = false
 var allMarkers
+var countryMark = []
 
 //------------------------------------------------ Map Controller ------------------------------------------------//
 
@@ -106,8 +107,8 @@ function initMap() {
 function as(a){
     var temp=[];
     var array;
-    for(p of a) {
-        for(plase of p){
+    for(var p of a) {
+        for(var plase of p){
 
             // console.log(plase)
             array = {
@@ -145,13 +146,13 @@ function drawMap(data) {
             }
             var center;
             if(poly.length==1){
-                for(a of poly){
+                for(var a of poly){
                     region = new Region(a);
                     center = region.centroid();
                 }
             }else{
                 var temp=[];
-                for(b of poly){
+                for(var b of poly){
                     region = new Region(b);
                     temp.push(region.centroid());
                 }
@@ -179,12 +180,19 @@ function drawMap(data) {
 
             google.maps.event.addListener(country, 'dblclick', function() {
                 console.log(this)
+                if(countryMark.length>0){
+                    for(var f of countryMark) {
+                        f.setOptions({fillOpacity: 0});
+                    }
+                }
                 this.setOptions({fillOpacity: 0.7, fillColor:"#D0FF6C"});
                 map.setOptions({disableDoubleClickZoom: true });
-                map.setCenter (new google.maps.LatLng(this.center.y, this.center.x),1);
+                map.setCenter (new google.maps.LatLng(this.center.y, this.center.x));
                 var popularWords =[]
                 popularWords.push(get_tweets_by_country(this.ID.toLowerCase()));
-                console.log(popularWords);
+                countryMark.push(this)
+                document.getElementById("countryName").innerHTML = this.ID;
+                document.getElementById("WordsMostPopular").innerHTML = "10 Most Popular Words in 'Good Morning' Tweets";
             });
 
             country.setMap(map);
