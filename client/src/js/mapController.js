@@ -135,7 +135,6 @@ function drawMap(data) {
             var geometries = rows[i][1]['geometries'];
             if (geometries) {
                 for (var j in geometries) {
-                    // console.log(geometries[j].coordinates)
                     poly.push(as(geometries[j].coordinates))
                     newCoordinates.push(constructNewCoordinates(geometries[j]));
                 }
@@ -144,8 +143,6 @@ function drawMap(data) {
                 cordinates= rows[i][1]['geometry'].coordinates;
                 poly.push(as(cordinates));
             }
-
-
             var center;
             if(poly.length==1){
                 for(a of poly){
