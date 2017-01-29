@@ -193,7 +193,11 @@ function drawMap(data) {
                 popularWords.push(get_tweets_by_country(this.ID.toLowerCase()));
                 console.log(popularWords)
 
-                buttonContainer = document.getElementById("tenPopular") ;
+                var buttonContainer = document.getElementById("tenPopular") ;
+
+                while (buttonContainer.hasChildNodes()) {
+                    buttonContainer.removeChild(buttonContainer.lastChild);
+                }
 
                 for (var key of popularWords) {
                     for(k of key){
