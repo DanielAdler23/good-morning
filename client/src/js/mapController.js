@@ -189,10 +189,23 @@ function drawMap(data) {
                 map.setOptions({disableDoubleClickZoom: true });
                 map.setCenter (new google.maps.LatLng(this.center.y, this.center.x));
                 var popularWords =[]
+                var newButton;
                 popularWords.push(get_tweets_by_country(this.ID.toLowerCase()));
-                countryMark.push(this)
+                console.log(popularWords)
+
+                buttonContainer = document.getElementById("tenPopular") ;
+
+                for (var key of popularWords) {
+                    for(k of key){
+                        newButton = document.createElement('input');
+                        newButton.type = 'button';
+                        newButton.value = k;
+                        buttonContainer.appendChild(newButton);
+                    }
+                }
                 document.getElementById("countryName").innerHTML = this.ID;
                 document.getElementById("WordsMostPopular").innerHTML = "10 Most Popular Words in 'Good Morning' Tweets";
+                countryMark.push(this)
             });
 
             country.setMap(map);
