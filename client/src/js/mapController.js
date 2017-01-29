@@ -103,46 +103,148 @@ function initMap() {
 }
 
 
-function drawMap(data) {
+function as(a){
+    var temp=[];
+    var array;
+    for(p of a) {
+        for(plase of p){
 
+            // console.log(plase)
+            array = {
+                "x": plase[0],
+                "y": plase[1]
+            }
+            temp.push(array);
+        }
+    }
+    return temp;
+}
+
+
+
+
+function drawMap(data) {
     var rows = data['rows'];
     for (var i in rows) {
-        var name = []
+        var name = [];
         name.push(rows[i][0]);
         if (rows[i][0] != 'Antarctica') {
             var newCoordinates = [];
+            var cordinates;
+            var poly=[];
             var geometries = rows[i][1]['geometries'];
             if (geometries) {
                 for (var j in geometries) {
+                    // console.log(geometries[j].coordinates)
+                    poly.push(as(geometries[j].coordinates))
                     newCoordinates.push(constructNewCoordinates(geometries[j]));
                 }
             } else {
                 newCoordinates = constructNewCoordinates(rows[i][1]['geometry']);
+                cordinates= rows[i][1]['geometry'].coordinates;
+                poly.push(as(cordinates));
             }
+
+
+            var center;
+            if(poly.length==1){
+                for(a of poly){
+                    region = new Region(a);
+                    center = region.centroid();
+                }
+            }else{
+                var temp=[];
+                for(b of poly){
+                    region = new Region(b);
+                    temp.push(region.centroid());
+                }
+                if(temp.length>2){
+                    region = new Region(temp);
+                    center = region.centroid();
+
+                }else{
+                    center = {
+                        x:(temp[0].x+temp[1].x)/2,
+                        y:(temp[0].y+temp[1].y)/2
+                    }
+                }
+            }
+
             var country = new google.maps.Polygon({
                 paths: newCoordinates,
                 strokeColor: '#42ace3',
                 strokeOpacity: 1,
                 strokeWeight: 1,
                 fillOpacity: 0,
-                ID:name
+                ID:name[0],
+                center:center
             });
-            // console.log(name)
-
 
             google.maps.event.addListener(country, 'dblclick', function() {
-                console.log(country)
-                // var latLng = new google.maps.LatLng(23, -81);
+                console.log(this)
                 this.setOptions({fillOpacity: 0.7, fillColor:"#D0FF6C"});
-                // map.panTo(latLng)
-                // map.setZoom(6)
-
+                map.setOptions({disableDoubleClickZoom: true });
+                map.setCenter (new google.maps.LatLng(this.center.y, this.center.x),1);
+                var popularWords =[]
+                popularWords.push(get_tweets_by_country(this.ID.toLowerCase()));
+                console.log(popularWords);
             });
 
             country.setMap(map);
         }
     }
 }
+
+function Point(x, y) {
+    this.x = x;
+    this.y = y;
+}
+
+function Region(points) {
+    this.points = points || [];
+    this.length = points.length;
+}
+
+Region.prototype.area = function () {
+    var area = 0,
+        i,
+        j,
+        point1,
+        point2;
+
+    for (i = 0, j = this.length - 1; i < this.length; j=i,i++) {
+        point1 = this.points[i];
+        point2 = this.points[j];
+        area += point1.x * point2.y;
+        area -= point1.y * point2.x;
+    }
+    area /= 2;
+
+    return area;
+};
+
+Region.prototype.centroid = function () {
+    var x = 0,
+        y = 0,
+        i,
+        j,
+        f,
+        point1,
+        point2;
+
+    for (i = 0, j = this.length - 1; i < this.length; j=i,i++) {
+        point1 = this.points[i];
+        point2 = this.points[j];
+        f = point1.x * point2.y - point2.x * point1.y;
+        x += (point1.x + point2.x) * f;
+        y += (point1.y + point2.y) * f;
+    }
+
+    f = this.area() * 6;
+
+    return new Point(x / f, y / f);
+};
+
 
 function constructNewCoordinates(polygon) {
     var newCoordinates = [];
@@ -155,6 +257,7 @@ function constructNewCoordinates(polygon) {
 }
 
 function set_markers(results) {
+
     for (var item of results) {
         var coords = item.coordinates
         var latLng = new google.maps.LatLng(coords.latitude, coords.longitude)
@@ -274,16 +377,19 @@ function get_all_tweets() {
 
 
 function get_tweets_by_country(country) {
+    var popular;
     $.ajax({
         type: "GET",
         async: false,
         dataType: "json",
         url: `https://gutenmorgen.herokuapp.com/tweets/country/${country}`,
         success: function (tweets) {
-            removeMarkers()
-            set_markers(tweets)
+            popular = tweets
+            // removeMarkers()
+            // set_markers(tweets)
         }
     });
+    return popular;
 }
 
 function get_tweet_content(id) {

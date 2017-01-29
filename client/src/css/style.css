@@ -31,20 +31,11 @@ nav{
     margin: auto;
 }
 
-#tweetUserPicture {
-    /*display: inline-block;*/
-}
-
-#firstHeading {
-    /*display: inline-block;*/
-    /*top: 0px;*/
-}
-
-#content .text {
+#content .text{
     font: normal 18px/24px Georgia, "Times New Roman", Palatino, serif;
     margin: 0 5px 10px 0;
 }
-#content .details {
+#content .details{
     font-weight: normal;
     color: #666;
     font-size: 12px;
@@ -54,16 +45,16 @@ nav{
     margin: 0 5px 10px 0;
 }
 
-#goodMorningTitle {
+#goodMorningTitle{
     z-index: 10;
     position: absolute;
     width:366px;
-    height: 25%;
+    height: 35%;
     padding-left: 40px;
     border-left: solid #D0FF6C 15px;
 }
 
-#goodMorningTitle h2 {
+#goodMorningTitle h2{
     margin-top: 80px;
     color: white;
     font-family: "Open Sans", sans-serif;
@@ -72,7 +63,7 @@ nav{
     line-height: 10px;
 }
 
-#goodMorningTitle p {
+#goodMorningTitle p{
     color: white;
     font-family: "Open Sans", sans-serif;
     font-size: 28px;
@@ -82,7 +73,7 @@ nav{
     line-height: 20px;
 }
 
-#goodMorningBody {
+#goodMorningBody{
     z-index: 10;
     position: absolute;
     width:256px;
@@ -91,7 +82,7 @@ nav{
 }
 
 
-#goodMorningBody p {
+#goodMorningBody p{
     color: white;
     font-family: "Open Sans", sans-serif;
     font-size: 24px;
@@ -100,12 +91,15 @@ nav{
     font-weight: 600;
 }
 
-#sideBarGreen {
+#sideBarGreen{
     position: absolute;
     top:34px;
     right: 0px;
     height: 790px;
     border-right: solid #D0FF6C 15px;
+}
+#tenPopular{
+    position: absolute;
 }
 
 #loading {
@@ -120,7 +114,7 @@ nav{
 }
 
 
-#wrapper {
+#wrapper{
     position: absolute;
     top: 50%;
     left: 50%;
@@ -156,3 +150,4 @@ nav{
         stroke-dashoffset: 0;
     }
 }
+
